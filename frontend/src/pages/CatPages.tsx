@@ -13,6 +13,7 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
     const { cats, fetchCats } = useGetCats();
     const { create } = useCreateFavorite();
     const [expandedCards, setExpandedCards] = useState<Set<number>>(new Set());
+    const [addingFavoriteId, setAddingFavoriteId] = useState<number | null>(null);
 
     useEffect(() => {
         fetchCats();
@@ -49,8 +50,9 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
     };
 
     const handleAddToFavorites = async (catId: number) => {
+        setAddingFavoriteId(catId);
         try {
-            await create(String(catId));
+            await create(catId);
             alert('¡Gato agregado a favoritos exitosamente!');
         } catch (error: any) {
             console.error('Error al agregar a favoritos:', error);
@@ -59,6 +61,8 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
             } else {
                 alert('Error al agregar a favoritos: ' + (error.message || 'Error desconocido'));
             }
+        } finally {
+            setAddingFavoriteId(null);
         }
     };
 
@@ -108,8 +112,10 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
                             <button 
                                 onClick={() => handleAddToFavorites(cat.id)}
                                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-2 px-4 rounded-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-300"
+                                disabled={addingFavoriteId === cat.id}
+                                style={addingFavoriteId === cat.id ? { opacity: 0.6, cursor: 'not-allowed' } : {}}
                             >
-                                Agregar a Favoritos
+                                {addingFavoriteId === cat.id ? 'Agregando...' : 'Agregar a Favoritos'}
                             </button>
                         </div>
                     </div>
