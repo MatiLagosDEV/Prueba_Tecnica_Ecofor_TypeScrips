@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useGetCats } from '../hooks/cats/useGetCats';
 import { useCreateFavorite } from '../hooks/catsFavorite/useCreateFavorite';
+import { Cat } from '../services/CatServices';
 
 interface CatPagesProps {
     searchTerm: string;
@@ -19,16 +20,15 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
 
     const filteredCats = useMemo(() => {
         return cats.filter(cat => {
-
             const matchesName = !searchTerm.trim() || 
                 cat.name.toLowerCase().includes(searchTerm.toLowerCase());
-            
+
             const matchesOrigin = !originFilter || 
-                cat.origin.toLowerCase().includes(originFilter.toLowerCase());
-            
-            const matchesTemperamento = !temperamentoFilter || 
+                cat.origen.toLowerCase().includes(originFilter.toLowerCase());
+
+            const matchesTemperamento = !temperamentoFilter ||
                 cat.temperamento.toLowerCase().includes(temperamentoFilter.toLowerCase());
-            
+
             return matchesName && matchesOrigin && matchesTemperamento;
         });
     }, [cats, searchTerm, originFilter, temperamentoFilter]);
@@ -44,20 +44,13 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
     };
 
 
-    const getCatImage = (catName: string) => {
-        const catImages: { [key: string]: string } = {
-            'Maine Coon': 'https://petscare-assets-prod.s3.amazonaws.com/media/original_images/maine-coon-cat-tree-branch-sunlit-84736.webp',
-            'Persa': 'https://nupec.com/wp-content/uploads/2022/06/portrait-of-a-gray-persian-cat-2021-08-29-08-46-19-utc.jpg',
-            'American': 'https://www.thesprucepets.com/thmb/qY8lDkwrmu2iKf56apl8G6mDZ-c=/750x0/filters:no_upscale():max_bytes(150000):strip_icc():format(webp)/american-bobtail-cat-breed-9f32da27133647db92f4decc93a71e6d.jpg'
-
-        };
-
-        return catImages[catName] || `https://api.thecatapi.com/v1/images/search?breed_ids=${catName.toLowerCase().replace(/\s+/g, '')}&limit=1`;
+    const getCatImage = (cat: Cat) => {
+        return cat.url ?? 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=300&fit=crop';
     };
 
     const handleAddToFavorites = async (catId: number) => {
         try {
-            await create(catId);
+            await create(String(catId));
             alert('¡Gato agregado a favoritos exitosamente!');
         } catch (error: any) {
             console.error('Error al agregar a favoritos:', error);
@@ -72,14 +65,15 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
     return (
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-4xl font-bold text-center text-gray-800 mb-8">Cat Breeds Explorer</h1>
-            
+            {filteredCats && filteredCats.length === 0 && (
+                <div className="text-center text-gray-500 py-8">No se encontraron gatos.</div>
+            )}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredCats.map(cat => (
+                {(filteredCats ?? []).map(cat => (
                     <div key={cat.id} className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 hover:shadow-xl transition-shadow duration-300">
-                        {}
                         <div className="h-48 w-full overflow-hidden">
                             <img
-                                src={getCatImage(cat.name)}
+                                src={getCatImage(cat)}
                                 alt={cat.name}
                                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                 onError={(e) => {
@@ -87,27 +81,22 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
                                 }}
                             />
                         </div>
-                        
                         <div className="p-6">
                             <h3 className="text-2xl font-semibold text-gray-800 mb-3 text-center">{cat.name}</h3>
-                            
                             <div className="space-y-2 mb-4">
                                 <p className="text-sm text-gray-600">
-                                    <span className="font-medium text-blue-600">Origen:</span> {cat.origin}
+                                    <span className="font-medium text-blue-600">Origen:</span> {cat.origen}
                                 </p>
                                 <p className="text-sm text-gray-600">
                                     <span className="font-medium text-purple-600">Temperamento:</span> {cat.temperamento}
                                 </p>
-                                <p className="text-sm text-gray-600">
-                                    <span className="font-medium text-green-600">Esperanza de vida:</span> {cat.esperanza_vida}
-                                </p>
+                      
                             </div>
-                            
                             <div className="mb-4">
                                 <p className={`text-gray-700 text-sm leading-relaxed ${expandedCards.has(cat.id) ? '' : 'line-clamp-3'}`}>
-                                    {cat.descripcion_completa}
+                                    {cat.descripcion ?? ''}
                                 </p>
-                                {cat.descripcion_completa.length > 150 && (
+                                {(cat.descripcion && cat.descripcion.length > 150) && (
                                     <button
                                         onClick={() => toggleExpanded(cat.id)}
                                         className="text-blue-600 hover:text-blue-800 text-xs font-medium mt-1 focus:outline-none"
@@ -116,7 +105,6 @@ const CatPages: React.FC<CatPagesProps> = ({ searchTerm, originFilter, temperame
                                     </button>
                                 )}
                             </div>
-                            
                             <button 
                                 onClick={() => handleAddToFavorites(cat.id)}
                                 className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium py-2 px-4 rounded-md transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-300"

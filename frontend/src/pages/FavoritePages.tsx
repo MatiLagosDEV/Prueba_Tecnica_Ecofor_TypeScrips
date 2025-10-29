@@ -5,9 +5,11 @@ import FavoriteItem from '../components/FavoriteItem';
 
 interface FavoritePagesProps {
     searchTerm: string;
+    originFilter: string;
+    temperamentoFilter: string;
 }
 
-const FavoritePages: React.FC<FavoritePagesProps> = ({ searchTerm }) => {
+const FavoritePages: React.FC<FavoritePagesProps> = ({ searchTerm, originFilter, temperamentoFilter }) => {
     const { favorites, fetchFavorites } = useGetFavorites();
     const { remove } = useDeleteFavorite();
 
@@ -17,13 +19,13 @@ const FavoritePages: React.FC<FavoritePagesProps> = ({ searchTerm }) => {
 
     // Filtrar favoritos basado en el término de búsqueda
     const filteredFavorites = useMemo(() => {
-        if (!searchTerm.trim()) {
-            return favorites;
-        }
-        return favorites.filter(favorite => 
-            favorite.cat_detalles.name.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-    }, [favorites, searchTerm]);
+        return favorites.filter(favorite => {
+            const matchesName = !searchTerm.trim() || (favorite.name ?? '').toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesOrigin = !originFilter || (favorite.origen ?? '').toLowerCase().includes(originFilter.toLowerCase());
+            const matchesTemperamento = !temperamentoFilter || (favorite.temperamento ?? '').toLowerCase().includes(temperamentoFilter.toLowerCase());
+            return matchesName && matchesOrigin && matchesTemperamento;
+        });
+    }, [favorites, searchTerm, originFilter, temperamentoFilter]);
 
     const handleDelete = async (favoriteId: number) => {
         try {

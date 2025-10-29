@@ -55,13 +55,11 @@ function App() {
                 className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
               >
                 <option value="">Todos los orígenes</option>
-                <option value="Estados Unidos">Estados Unidos</option>
-                <option value="Reino Unido">Reino Unido</option>
-                <option value="Egipto">Egipto</option>
-                <option value="Tailandia">Tailandia</option>
-                <option value="Irán">Irán</option>
-                <option value="Birmania">Birmania</option>
-                <option value="Rusia">Rusia</option>
+                <option value="United States">Estados Unidos</option>
+                <option value="Greece">Grecia</option>
+                <option value="Egypt">Egipto</option>
+                <option value="Australia">Australia</option>
+                <option value="United Arab Emirates">Emiratos Árabes Unidos</option>
               </select>
 
               <select
@@ -70,12 +68,24 @@ function App() {
                 className="px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent bg-white"
               >
                 <option value="">Todos los temperamentos</option>
-                <option value="Amigable">Amigable</option>
-                <option value="Tranquilo">Tranquilo</option>
-                <option value="Activo">Activo</option>
-                <option value="Inteligente">Inteligente</option>
-                <option value="Independiente">Independiente</option>
-                <option value="Cariñoso">Cariñoso</option>
+                <option value="Affectionate">Cariñoso</option>
+                <option value="Active">Activo</option>
+                <option value="Intelligent">Inteligente</option>
+                <option value="Independent">Independiente</option>
+                <option value="Gentle">Amable</option>
+                <option value="Energetic">Energetico</option>
+                <option value="Social">Social</option>
+                <option value="Playful">Jugueton</option>
+                <option value="Interactive">Interactivo</option>
+                <option value="Lively">Dinamico</option>
+                <option value="Curious">Curioso</option>
+                <option value="Sensitive">Sensitivo</option>
+                <option value="Calm">Calmado</option>
+                <option value="Loyal">Leal</option>
+                <option value="Easy Going">De trato facil</option>
+                <option value="Friendly">Amistoso</option>
+                
+    
               </select>
 
               {(searchTerm || originFilter || temperamentoFilter) && (
@@ -104,7 +114,7 @@ function App() {
               temperamentoFilter={temperamentoFilter}
             />
           } />
-          <Route path="/Favorites" element={<FavoritePages searchTerm={searchTerm} />} />
+          <Route path="/Favorites" element={<FavoritePages searchTerm={searchTerm} originFilter={originFilter} temperamentoFilter={temperamentoFilter} />} />
         </Routes>
       </div>
     </BrowserRouter>

@@ -1,15 +1,16 @@
+
 import axios from "axios";
 
 export interface Cat {
   id: number;
   name: string;
-  origin: string;
+  origen: string;
   temperamento: string;
-  esperanza_vida: string;
-  descripcion_completa: string;
+  descripcion: string;
+  url: string;
 }
 
-const API_URL = "http://localhost:8000/api/api/thecatapi.com/v1/cats/";
+const API_URL = "http://localhost:8000/api/api/thecatapi.com/v1/breeds/";
 
 export const getCats = () => axios.get<Cat[]>(API_URL);
 
